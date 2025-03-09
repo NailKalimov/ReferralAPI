@@ -1,0 +1,410 @@
+openapi: 3.0.3
+info:
+  title: ReferralAPI
+  version: 0.0.0
+  description: RESTful API сервис для реферальной системы
+paths:
+  /api/token/:
+    post:
+      operationId: api_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: api_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /referral/all/:
+    get:
+      operationId: referral_all_list
+      tags:
+      - referral
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Referral'
+          description: ''
+  /referral/create/:
+    post:
+      operationId: referral_create_create
+      tags:
+      - referral
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Referral'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Referral'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Referral'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Referral'
+          description: ''
+  /referral/delete/:
+    delete:
+      operationId: referral_delete_destroy
+      tags:
+      - referral
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /user/all_users/:
+    get:
+      operationId: user_all_users_list
+      summary: List of users
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserView'
+          description: ''
+  /user/all_users/{id}/:
+    get:
+      operationId: user_all_users_retrieve
+      summary: User detail
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this user.
+        required: true
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserView'
+          description: ''
+  /user/referrals/{id}:
+    get:
+      operationId: user_referrals_retrieve
+      summary: List of invited users
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - user
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserView'
+          description: ''
+  /user/register/:
+    post:
+      operationId: user_register_create
+      summary: New user
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+            examples:
+              PostExample:
+                value:
+                  username: testuser_xxx
+                  email: user@example.com
+                  password: string
+                  referrer: null
+                summary: Post example
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+              examples:
+                PostExample:
+                  value:
+                    username: testuser_xxx
+                    email: user@example.com
+                    password: string
+                    referrer: null
+                  summary: Post example
+          description: ''
+  /user/register/{ref_code}:
+    post:
+      operationId: user_register_create_2
+      summary: New user
+      parameters:
+      - in: path
+        name: ref_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+            examples:
+              PostExample:
+                value:
+                  username: testuser_xxx
+                  email: user@example.com
+                  password: string
+                  referrer: null
+                summary: Post example
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+              examples:
+                PostExample:
+                  value:
+                    username: testuser_xxx
+                    email: user@example.com
+                    password: string
+                    referrer: null
+                  summary: Post example
+          description: ''
+components:
+  schemas:
+    RefCode:
+      type: object
+      properties:
+        code:
+          type: string
+          title: Реферальный код
+          maxLength: 100
+      required:
+      - code
+    Referral:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        create_date:
+          type: string
+          format: date
+          readOnly: true
+          title: Дата создания
+        code:
+          type: string
+          title: Реферальный код
+          maxLength: 100
+        valid_period:
+          type: integer
+          title: Срок действия
+        end_date:
+          type: string
+          format: date
+          title: Дата окончания
+        owner:
+          type: integer
+          title: Реферал
+      required:
+      - code
+      - create_date
+      - end_date
+      - id
+      - owner
+      - valid_period
+    TokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - password
+      - refresh
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UserCreate:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          maxLength: 128
+        referrer:
+          type: integer
+          nullable: true
+          title: Реферер
+      required:
+      - password
+      - username
+    UserView:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        groups:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: The groups this user belongs to. A user will get all permissions
+            granted to each of their groups.
+        referrer:
+          type: string
+          format: uri
+          nullable: true
+          title: Реферер
+        referral_code:
+          $ref: '#/components/schemas/RefCode'
+      required:
+      - id
+      - referral_code
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
