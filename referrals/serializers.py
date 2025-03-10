@@ -1,9 +1,9 @@
-from rest_framework import serializers
+from adrf.serializers import ModelSerializer
 
 from .models import Referral
 
 
-class ReferralSerializer(serializers.ModelSerializer):
+class ReferralSerializer(ModelSerializer):
     class Meta:
         model = Referral
         fields = '__all__'
