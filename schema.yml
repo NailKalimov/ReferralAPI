@@ -61,11 +61,13 @@ paths:
   /referral/all/:
     get:
       operationId: referral_all_list
+      description: Concrete view for listing a queryset.
       tags:
       - referral
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -78,6 +80,7 @@ paths:
   /referral/create/:
     post:
       operationId: referral_create_create
+      description: Concrete view for creating a model instance.
       tags:
       - referral
       requestBody:
@@ -93,9 +96,11 @@ paths:
               $ref: '#/components/schemas/Referral'
         required: true
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
       responses:
-        '201':
+        '200':
           content:
             application/json:
               schema:
@@ -104,23 +109,30 @@ paths:
   /referral/delete/:
     delete:
       operationId: referral_delete_destroy
+      description: Concrete view for deleting a model instance.
+      summary: delete users actual referral code
       tags:
       - referral
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
-      - {}
       responses:
         '204':
           description: No response body
-  /user/all_users/:
+  /user/all/:
     get:
-      operationId: user_all_users_list
+      operationId: user_all_list
+      description: |-
+        A viewset that provides default asynchronous `create()`, `retrieve()`, `update()`,
+        `partial_update()`, `destroy()` and `list()` actions.
       summary: List of users
       tags:
       - user
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -128,11 +140,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserView'
+                  $ref: '#/components/schemas/aUserView'
           description: ''
-  /user/all_users/{id}/:
+  /user/all/{id}/:
     get:
-      operationId: user_all_users_retrieve
+      operationId: user_all_retrieve
+      description: |-
+        A viewset that provides default asynchronous `create()`, `retrieve()`, `update()`,
+        `partial_update()`, `destroy()` and `list()` actions.
       summary: User detail
       parameters:
       - in: path
@@ -144,16 +159,30 @@ paths:
       tags:
       - user
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
-      - {}
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserView'
+                $ref: '#/components/schemas/aUserView'
           description: ''
-  /user/referrals/{id}:
+  /user/referral/get/:
+    get:
+      operationId: user_referral_get_retrieve
+      summary: Actual users referral to email
+      tags:
+      - user
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /user/referrals/{id}/:
     get:
       operationId: user_referrals_retrieve
       summary: List of invited users
@@ -166,6 +195,8 @@ paths:
       tags:
       - user
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
       - {}
       responses:
@@ -173,7 +204,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserView'
+                $ref: '#/components/schemas/aUserView'
           description: ''
   /user/register/:
     post:
@@ -185,23 +216,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/aUserCreate'
             examples:
               PostExample:
                 value:
                   username: testuser_xxx
                   email: user@example.com
                   password: string
-                  referrer: null
                 summary: Post example
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/aUserCreate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/aUserCreate'
         required: true
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
       - {}
       responses:
@@ -209,19 +241,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCreate'
-              examples:
-                PostExample:
-                  value:
-                    username: testuser_xxx
-                    email: user@example.com
-                    password: string
-                    referrer: null
-                  summary: Post example
+                $ref: '#/components/schemas/aUserCreate'
           description: ''
-  /user/register/{ref_code}:
+  /user/register/{ref_code}/:
     post:
-      operationId: user_register_create_2
+      operationId: user_register_create_with_referral_code
       summary: New user
       parameters:
       - in: path
@@ -235,23 +259,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/aUserCreate'
             examples:
               PostExample:
                 value:
                   username: testuser_xxx
                   email: user@example.com
                   password: string
-                  referrer: null
                 summary: Post example
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/aUserCreate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserCreate'
+              $ref: '#/components/schemas/aUserCreate'
         required: true
       security:
+      - basicAuth: []
+      - cookieAuth: []
       - jwtAuth: []
       - {}
       responses:
@@ -259,29 +284,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserCreate'
-              examples:
-                PostExample:
-                  value:
-                    username: testuser_xxx
-                    email: user@example.com
-                    password: string
-                    referrer: null
-                  summary: Post example
+                $ref: '#/components/schemas/aUserCreate'
           description: ''
 components:
   schemas:
-    RefCode:
-      type: object
-      properties:
-        code:
-          type: string
-          title: Реферальный код
-          maxLength: 100
-      required:
-      - code
     Referral:
       type: object
+      description: Base serializer class.
       properties:
         id:
           type: integer
@@ -304,7 +313,7 @@ components:
           title: Дата окончания
         owner:
           type: integer
-          title: Реферал
+          title: Владелец
       required:
       - code
       - create_date
@@ -344,8 +353,19 @@ components:
       required:
       - access
       - refresh
-    UserCreate:
+    aRefCode:
       type: object
+      description: Base serializer class.
+      properties:
+        code:
+          type: string
+          title: Реферальный код
+          maxLength: 100
+      required:
+      - code
+    aUserCreate:
+      type: object
+      description: Base serializer class.
       properties:
         username:
           type: string
@@ -368,8 +388,9 @@ components:
       required:
       - password
       - username
-    UserView:
+    aUserView:
       type: object
+      description: Base serializer class.
       properties:
         id:
           type: integer
@@ -388,22 +409,27 @@ components:
         groups:
           type: array
           items:
-            type: string
-            format: uri
+            type: integer
           description: The groups this user belongs to. A user will get all permissions
             granted to each of their groups.
         referrer:
-          type: string
-          format: uri
+          type: integer
           nullable: true
           title: Реферер
         referral_code:
-          $ref: '#/components/schemas/RefCode'
+          $ref: '#/components/schemas/aRefCode'
       required:
       - id
       - referral_code
       - username
   securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
     jwtAuth:
       type: http
       scheme: bearer
