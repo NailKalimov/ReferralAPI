@@ -33,6 +33,7 @@ class UserViewSet(aModelViewSet):
 class ReferralUserCreate(aAPIView):
     serializer_class = aUserCreateSerializer
 
+
     @extend_schema(
         summary="New user",
         examples=[
@@ -62,6 +63,7 @@ class ReferralUserCreate(aAPIView):
 # async view
 class ReferralUserListView(aAPIView):
     serializer_class = aUserViewSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     @extend_schema(summary="List of invited users")
     async def get(self, request, pk):
